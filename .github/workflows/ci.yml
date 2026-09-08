@@ -1,4 +1,4 @@
-name: CI - Sistema de Biblioteca
+name: CI/CD - Sistema de Biblioteca
 
 on:
   push:
@@ -24,3 +24,25 @@ jobs:
 
       - name: Executar testes
         run: PYTHONPATH=. pytest -q
+
+  # FASE 2: ENTREGA CONTÍNUA (CD) E DOCKER
+  deploy:
+    needs: testes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v5
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Construir a Imagem Docker (CD)
+        run: |
+          echo "Iniciando o build do container Docker..."
+          docker build -t sistema-biblioteca:latest .
+
+      - name: Verificar Imagens Geradas
+        run: |
+          echo "Simulando o deploy e verificando as imagens locais:"
+          docker image ls
